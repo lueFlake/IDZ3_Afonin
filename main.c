@@ -11,7 +11,6 @@ int main(int argc, char** argv) {
     clock_t start, finish;
     clock_t total = 0;
     double x;
-    int n = 0;
     double res;
 
     FILE* ifs = stdin;
@@ -26,12 +25,15 @@ int main(int argc, char** argv) {
             isRandom = 1;
         }
         ofs = fopen(argv[2], "w");
+    } else {
+        printf("Wrong no. of arguments\n");
+        return 0;
     }
     if (ifs == NULL) {
         printf("Failed to open file %s\n", argv[1]);
         return 0;
     }
-    if (ifs != NULL) {
+    if (!isRandom) {
         int success = fscanf(ifs, "%lf", &x);
         if (!success) {
             printf("Failed to read file %s\n", argv[1]);
@@ -44,13 +46,15 @@ int main(int argc, char** argv) {
         fprintf(ofs, "%.10e\n", res);
         fprintf(ofs, "time: %ld ms\n", finish - start);
     } else {
-        for (int i = 0; i < 100000; ++i) {
-            x = genFloat(-100, 100);
-            fprintf(ofs, "test no.%d:\n\n in: %f\n\n ", i, x);
+        for (int i = 0; i < 1000000; ++i) {
+            x = genFloat(-200, 200);
             start = clock();
             res = compute(x);
             finish = clock();
-            fprintf(ofs, "out: %f\n\n", res);
+            if (i < 100) {
+                fprintf(ofs, "test no.%d:\n\n in: %f\n\n ", i, x);
+                fprintf(ofs, "out: %.10e\n\n", res);
+            }
             total += finish - start;
         }
         fprintf(ofs, "total random testing time: %ld ms", total);
